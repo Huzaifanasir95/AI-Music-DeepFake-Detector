@@ -6,8 +6,12 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-EE4C2C.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![CUDA](https://img.shields.io/badge/CUDA-11.8-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18114511.svg)](https://doi.org/10.5281/zenodo.18114511)
+[![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow)](https://huggingface.co/huzaifanasirrr/ai-music-deepfake-detector)
 
 **A Hybrid Deep Learning System for Detecting AI-Generated Music**
+
+[📄 Paper (Zenodo)](https://doi.org/10.5281/zenodo.18114511) | [🤗 Model (Hugging Face)](https://huggingface.co/huzaifanasirrr/ai-music-deepfake-detector) | [💻 GitHub](https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector)
 
 </div>
 
@@ -660,6 +664,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - 🎓 Institution: National University of Computer and Emerging Sciences (FAST-NUCES), Islamabad
 - 💼 GitHub: [@Huzaifanasir95](https://github.com/Huzaifanasir95)
 - 🔗 Project Repository: [AI-Music-DeepFake-Detector](https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector)
+- 📄 Research Paper: [Zenodo DOI: 10.5281/zenodo.18114511](https://doi.org/10.5281/zenodo.18114511)
+- 🤗 Pretrained Model: [Hugging Face Hub](https://huggingface.co/huzaifanasirrr/ai-music-deepfake-detector)
 
 ### Support
 
