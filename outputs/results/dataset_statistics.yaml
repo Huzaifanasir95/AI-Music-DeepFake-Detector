@@ -1,0 +1,7 @@
+dataset_ready: true
+duration: 10
+real_files_count: 1000
+sample_rate: 22050
+synthetic_files_count: 512
+timestamp: '2026-01-01T11:39:22.341278'
+total_files: 1512
