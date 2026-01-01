@@ -1,0 +1,120 @@
+# AI Music DeepFake Detector - Configuration File
+
+# Project Paths
+paths:
+  data_dir: "data"
+  raw_real: "data/raw/real"
+  raw_synthetic: "data/raw/synthetic"
+  processed: "data/processed"
+  splits: "data/splits"
+  models: "outputs/models"
+  logs: "outputs/logs"
+  visualizations: "outputs/visualizations"
+  results: "outputs/results"
+
+# Audio Processing
+audio:
+  sample_rate: 22050
+  duration: 10  # seconds
+  n_fft: 2048
+  hop_length: 512
+  n_mels: 128
+  n_mfcc: 20
+  fmin: 0
+  fmax: 8000
+
+# Data Augmentation
+augmentation:
+  enabled: true
+  time_stretch_rate: [0.8, 1.2]
+  pitch_shift_steps: [-2, 2]
+  noise_factor: 0.005
+  time_mask_param: 80
+  freq_mask_param: 27
+
+# Dataset
+dataset:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  batch_size: 32
+  num_workers: 4
+  shuffle: true
+  pin_memory: true
+
+# Autoencoder Architecture
+autoencoder:
+  input_channels: 1
+  encoder_channels: [32, 64, 128, 256]
+  latent_dim: 256
+  decoder_channels: [256, 128, 64, 32]
+  activation: "relu"
+  use_batch_norm: true
+  dropout: 0.2
+
+# Transformer Architecture
+transformer:
+  d_model: 512
+  nhead: 8
+  num_layers: 6
+  dim_feedforward: 2048
+  dropout: 0.1
+  activation: "gelu"
+  max_seq_length: 1000
+
+# Hybrid Model
+hybrid:
+  fusion_method: "concatenate"  # concatenate, add, attention
+  fusion_dim: 768
+  classifier_hidden: [512, 256, 128]
+  num_classes: 2
+
+# Training
+training:
+  epochs: 100
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  optimizer: "adamw"
+  scheduler: "cosine"
+  warmup_epochs: 5
+  early_stopping_patience: 15
+  gradient_clip: 1.0
+  mixed_precision: true
+  
+  # Loss weights
+  classification_weight: 1.0
+  reconstruction_weight: 0.5
+  
+  # Staged training
+  stage1_epochs: 20  # Train autoencoder only
+  stage2_epochs: 20  # Train transformer only
+  stage3_epochs: 60  # Train hybrid model
+
+# Evaluation
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1", "roc_auc"]
+  save_predictions: true
+  save_confusion_matrix: true
+  save_roc_curve: true
+
+# Inference
+inference:
+  checkpoint_path: "outputs/models/best_model.pt"
+  device: "cuda"  # cuda or cpu
+  batch_size: 16
+  confidence_threshold: 0.5
+
+# Logging
+logging:
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "ai-music-deepfake-detector"
+  log_interval: 10
+  save_interval: 5
+
+# Deployment
+deployment:
+  export_onnx: true
+  quantize: true
+  optimize: true
+  demo_interface: "gradio"  # gradio or streamlit
