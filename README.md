@@ -1,235 +1,330 @@
 # 🎵 AI Music DeepFake Detector
 
-> **Detecting Synthetic Music using a Hybrid Transformer–Autoencoder Framework**
+<div align="center">
 
-A state-of-the-art deep learning system that combines the power of autoencoders and transformers to distinguish between human-composed and AI-generated music with high accuracy.
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-EE4C2C.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CUDA](https://img.shields.io/badge/CUDA-11.8-76B900.svg)](https://developer.nvidia.com/cuda-toolkit)
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**A Hybrid Deep Learning System for Detecting AI-Generated Music**
+
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Results](#-results) • [Architecture](#-architecture) • [Citation](#-citation)
+
+</div>
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Dataset Preparation](#dataset-preparation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Results](#results)
-- [Contributing](#contributing)
-- [License](#license)
+- [Overview](#-overview)
+- [Key Features](#-features)
+- [Architecture](#-architecture)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Results](#-results)
+- [Project Structure](#-project-structure)
+- [Datasets](#-datasets)
+- [Training](#-training)
+- [Evaluation](#-evaluation)
+- [Technical Report](#-technical-report)
+- [Requirements](#-requirements)
+- [Citation](#-citation)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
 
 ---
 
 ## 🎯 Overview
 
-With the rapid advancement of AI music generation tools (MusicGen, Jukebox, AIVA), distinguishing between authentic and synthetic music has become crucial for:
+The **AI Music DeepFake Detector** is a state-of-the-art deep learning system that combines **Convolutional Autoencoders** and **Transformer Encoders** to distinguish between authentic human-created music and AI-generated audio content. With the rapid advancement of AI music generation platforms like Suno AI, AIVA, and Jukebox, there's an increasing need for reliable detection systems to ensure content authenticity and protect intellectual property.
 
-- 🔒 **Copyright Protection**: Verify music authenticity
-- 🎓 **Academic Integrity**: Detect AI-assisted composition
-- ⚖️ **Digital Forensics**: Identify deepfake audio
-- 🎨 **Content Verification**: Ensure artistic authenticity
+### 🎯 Problem Statement
 
-This project implements a novel **Hybrid Transformer-Autoencoder Framework** that achieves **85-92% accuracy** in detecting AI-generated music.
+AI-generated music poses significant challenges:
+- **Copyright Infringement**: AI models may generate derivative works without proper attribution
+- **Content Authenticity**: Platforms need reliable methods to identify AI-generated content
+- **Artist Protection**: Musicians require tools to verify and protect their work
+- **Academic Integrity**: Educational institutions need detection systems for research validation
+
+### 💡 Our Solution
+
+We propose a **hybrid architecture** that achieves:
+- ✅ **95% overall accuracy** on test data
+- ✅ **100% recall** for authentic music detection (no false negatives)
+- ✅ **90% accuracy** for AI-generated music identification
+- ✅ **Balanced performance** across both real and synthetic classes
 
 ---
 
 ## ✨ Features
 
-- 🧠 **Hybrid Architecture**: Combines autoencoder reconstruction with transformer temporal analysis
-- 🎼 **Multi-Feature Extraction**: Mel-spectrograms, MFCCs, chromagrams, spectral features
-- 🔄 **Advanced Augmentation**: Time stretching, pitch shifting, noise injection
-- 📊 **Comprehensive Evaluation**: ROC curves, confusion matrices, attention visualization
-- 🚀 **Production Ready**: ONNX export, quantization, REST API
-- 🎨 **Interactive Demo**: Gradio/Streamlit web interface
-- 📓 **10 Detailed Notebooks**: Step-by-step implementation guide
+### Core Capabilities
+- 🎼 **Dual-Mode Detection**: Classify audio as real or AI-generated
+- 🧠 **Hybrid Architecture**: Combines spatial (CNN) and temporal (Transformer) feature learning
+- 📊 **High Accuracy**: 95% test accuracy with perfect recall for authentic music
+- ⚡ **GPU Accelerated**: CUDA-optimized training and inference
+- 📈 **Comprehensive Metrics**: Precision, recall, F1-score, confusion matrices
+
+### Technical Highlights
+- **Mel-Spectrogram Processing**: Perceptually-relevant time-frequency representations
+- **Joint Optimization**: Combined classification and reconstruction losses
+- **Early Stopping**: Automatic training termination to prevent overfitting
+- **Cosine Annealing**: Learning rate scheduling with warmup
+- **Batch Normalization**: Enhanced training stability
+- **Dropout Regularization**: Prevents overfitting with limited data
 
 ---
 
 ## 🏗️ Architecture
 
-### Hybrid Model Overview
+Our hybrid model combines three key components:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Input Audio (10s)                        │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-          ┌───────────┴───────────┐
-          │                       │
-          ▼                       ▼
-┌──────────────────┐    ┌──────────────────┐
-│   Mel-Spectrogram│    │  Sequential      │
-│   (128 x T)      │    │  Features        │
-└────────┬─────────┘    └────────┬─────────┘
-         │                       │
-         ▼                       ▼
-┌──────────────────┐    ┌──────────────────┐
-│   AUTOENCODER    │    │   TRANSFORMER    │
-│   Encoder        │    │   Encoder        │
-│   (5 Conv Blocks)│    │   (6 Layers)     │
-└────────┬─────────┘    └────────┬─────────┘
-         │                       │
-         ▼                       ▼
-┌──────────────────┐    ┌──────────────────┐
-│  Latent Features │    │ Temporal Features│
-│  (256-dim)       │    │  (512-dim)       │
-└────────┬─────────┘    └────────┬─────────┘
-         │                       │
-         └───────────┬───────────┘
-                     │
-                     ▼
-          ┌──────────────────┐
-          │  Fusion Layer    │
-          │  (768 → 256)     │
-          └────────┬─────────┘
-                   │
-                   ▼
-          ┌──────────────────┐
-          │  Classification  │
-          │  Real / Synthetic│
-          └──────────────────┘
+```mermaid
+graph TB
+    A[Input Audio<br/>10s @ 22,050 Hz] --> B[Mel-Spectrogram<br/>128 x 431]
+    
+    B --> C[Convolutional Autoencoder]
+    
+    C --> D[Encoder<br/>Conv2D Blocks<br/>1→32→64→128→256]
+    D --> E[Latent Space<br/>256 x 8 x 27]
+    E --> F[Decoder<br/>ConvTranspose2D<br/>256→128→64→32→1]
+    F --> G[Reconstructed<br/>128 x 432]
+    
+    E --> H[Transformer Encoder]
+    
+    H --> I[Input Projection<br/>256 → 512]
+    I --> J[Positional Encoding<br/>Sinusoidal PE]
+    J --> K[6 Transformer Layers<br/>8 Heads, d_model=512]
+    K --> L[Global Avg Pooling<br/>512-dim features]
+    
+    L --> M[Fusion Layer<br/>512 → 768]
+    M --> N[Classifier<br/>768→512→256→128→2]
+    N --> O[Output<br/>Real vs AI-Generated]
+    
+    G --> P[Reconstruction Loss<br/>MSE]
+    O --> Q[Classification Loss<br/>Cross-Entropy]
+    P --> R[Combined Loss<br/>0.7*Class + 0.3*Recon]
+    Q --> R
+    
+    style A fill:#e1f5ff
+    style O fill:#d4edda
+    style C fill:#fff3cd
+    style H fill:#f8d7da
+    style R fill:#d1ecf1
 ```
 
-### Key Components
+### Component Breakdown
 
-1. **Autoencoder**: Learns compressed representations and reconstruction patterns
-   - Encoder: 5 convolutional blocks (1→32→64→128→256)
-   - Bottleneck: 256-dimensional latent space
-   - Decoder: Transposed convolutions for reconstruction
+#### 1. **Convolutional Autoencoder** (2.76M parameters)
+- **Encoder**: 4 convolutional blocks with stride-2 downsampling
+  - Channel progression: `1 → 32 → 64 → 128 → 256`
+  - Each block: Conv2D → BatchNorm → ReLU → Dropout(0.2)
+- **Decoder**: 4 transposed convolutional blocks for reconstruction
+  - Channel progression: `256 → 128 → 64 → 32 → 1`
+  - Final activation: Tanh (output range [-1, 1])
 
-2. **Transformer**: Captures temporal dependencies and sequential patterns
-   - 6 encoder layers with 8 attention heads
-   - Positional encoding for temporal information
-   - d_model=512, d_ff=2048
+#### 2. **Transformer Encoder** (18.19M parameters)
+- **Input Projection**: Linear layer (256 → 512 dimensions)
+- **Positional Encoding**: Sinusoidal encoding for sequence order
+- **Transformer Layers**: 6 layers with:
+  - 8 attention heads
+  - d_model = 512
+  - Feedforward dimension = 2,048
+  - GELU activation
+  - Dropout = 0.1
 
-3. **Fusion Layer**: Combines both representations for robust classification
+#### 3. **Fusion & Classifier** (0.94M parameters)
+- **Global Average Pooling**: Aggregate sequence features
+- **Fusion Layer**: Linear projection to 768 dimensions
+- **Classifier**: 4-layer MLP with progressive reduction
+  - Layer dimensions: `768 → 512 → 256 → 128 → 2`
+  - Dropout = 0.3 between layers
+  - Final softmax for binary classification
+
+### Loss Function
+
+The model optimizes a weighted combination of two objectives:
+
+```python
+Total Loss = 0.7 × Classification Loss + 0.3 × Reconstruction Loss
+```
+
+- **Classification Loss**: Cross-entropy for real/fake detection
+- **Reconstruction Loss**: MSE between input and reconstructed spectrograms
+
+This joint optimization ensures the model learns both discriminative features for classification and generalizable representations for reconstruction.
 
 ---
 
-## 🛠️ Installation
+## 🚀 Installation
 
 ### Prerequisites
 
 - Python 3.8 or higher
-- CUDA-capable GPU (recommended, 8GB+ VRAM)
-- 16GB+ RAM
-- ~50GB free disk space
+- NVIDIA GPU with CUDA 11.8+ (recommended)
+- 8GB+ RAM
+- 5GB+ free disk space
 
-### Setup
+### Step 1: Clone Repository
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/AI-Music-DeepFake-Detector.git
-   cd AI-Music-DeepFake-Detector
-   ```
+```bash
+git clone https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector.git
+cd AI-Music-DeepFake-Detector
+```
 
-2. **Create virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+### Step 2: Create Virtual Environment
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+# Using conda (recommended)
+conda create -n deepfake-detector python=3.8
+conda activate deepfake-detector
 
-4. **Verify installation**:
-   ```bash
-   python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA: {torch.cuda.is_available()}')"
-   ```
+# OR using venv
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
+```
+
+### Step 3: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Verify Installation
+
+```bash
+python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}')"
+```
+
+Expected output:
+```
+PyTorch: 2.7.1+cu118
+CUDA Available: True
+```
 
 ---
 
-## 📊 Dataset Preparation
+## 📖 Usage
 
-### Option 1: Use Existing Datasets
+### Quick Start: Inference on New Audio
 
-Place your audio files in the following structure:
+```python
+import torch
+from src.models.hybrid_model import HybridModel
+from src.utils.audio_processor import AudioProcessor
+
+# Load trained model
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = HybridModel.load_from_checkpoint('outputs/models/best_model.pth')
+model = model.to(device)
+model.eval()
+
+# Process audio file
+processor = AudioProcessor(config_path='config.yaml')
+mel_spec = processor.load_and_preprocess('path/to/audio.mp3')
+
+# Make prediction
+with torch.no_grad():
+    mel_spec = mel_spec.unsqueeze(0).to(device)  # Add batch dimension
+    logits = model(mel_spec)
+    probabilities = torch.softmax(logits, dim=1)
+    prediction = torch.argmax(logits, dim=1).item()
+
+# Display result
+label = "Real Music" if prediction == 0 else "AI-Generated"
+confidence = probabilities[0][prediction].item() * 100
+
+print(f"Prediction: {label}")
+print(f"Confidence: {confidence:.2f}%")
 ```
-data/
-├── raw/
-│   ├── real/          # Human-composed music
-│   │   ├── song1.mp3
-│   │   ├── song2.wav
-│   │   └── ...
-│   └── synthetic/     # AI-generated music
-│       ├── ai_song1.mp3
-│       ├── ai_song2.wav
-│       └── ...
+
+### Training from Scratch
+
+```bash
+# 1. Prepare datasets (GTZAN + Suno AI)
+jupyter notebook notebooks/01_setup_and_data_exploration.ipynb
+
+# 2. Preprocess audio and extract features
+jupyter notebook notebooks/02_audio_preprocessing_features.ipynb
+
+# 3. Train the model
+jupyter notebook notebooks/03_model_development.ipynb
 ```
 
-### Option 2: Generate Synthetic Music
+### Jupyter Notebook Workflow
 
-Use AI music generation tools:
-- **MusicGen**: `pip install musicgen` ([GitHub](https://github.com/facebookresearch/audiocraft))
-- **Jukebox**: Follow [OpenAI Jukebox](https://github.com/openai/jukebox) setup
-- **AIVA**: Use [AIVA.ai](https://www.aiva.ai/) web interface
+We provide interactive Jupyter notebooks for the complete pipeline:
 
-### Recommended Dataset Size
+1. **`01_setup_and_data_exploration.ipynb`**
+   - Download GTZAN dataset (1000 real music tracks)
+   - Collect Suno AI-generated music (256 synthetic tracks)
+   - Exploratory data analysis and visualization
 
-- Minimum: 500 samples per class (1,000 total)
-- Recommended: 2,000+ samples per class (4,000+ total)
-- Optimal: 5,000+ samples per class (10,000+ total)
+2. **`02_audio_preprocessing_features.ipynb`**
+   - Extract mel-spectrograms (128 × 431)
+   - Create train/val/test splits (70/15/15)
+   - Save processed data (279/61/60 samples)
+
+3. **`03_model_development.ipynb`**
+   - Define hybrid architecture
+   - Train for up to 100 epochs (early stopping)
+   - Evaluate on test set
+   - Generate visualizations and reports
 
 ---
 
-## 🚀 Usage
+## 📊 Results
 
-### 1. Run Jupyter Notebooks (Recommended for Learning)
+### Performance Metrics
 
-Execute notebooks sequentially:
+| Metric | Real Music | AI-Generated | Overall |
+|--------|-----------|--------------|---------|
+| **Precision** | 90.91% | 100.00% | 95.45% |
+| **Recall** | **100.00%** | 90.00% | 95.00% |
+| **F1-Score** | 95.24% | 94.74% | 94.99% |
+| **Support** | 30 | 30 | 60 |
 
-```bash
-jupyter notebook
-```
+### Key Achievements
 
-Then open and run:
-1. `01_setup_and_data_exploration.ipynb`
-2. `02_audio_preprocessing.ipynb`
-3. `03_dataset_preparation.ipynb`
-4. `04_autoencoder_architecture.ipynb`
-5. `05_transformer_architecture.ipynb`
-6. `06_hybrid_model.ipynb`
-7. `07_model_training.ipynb`
-8. `08_model_evaluation.ipynb`
-9. `09_inference_visualization.ipynb`
-10. `10_deployment.ipynb`
+✅ **95% Overall Accuracy** on test set  
+✅ **100% Recall** for real music (zero false negatives)  
+✅ **90% Accuracy** for AI-generated detection  
+✅ **Perfect real music protection** (no authentic works flagged)
 
-### 2. Train Model (Command Line)
+### Training Curves
 
-```bash
-python src/training/trainer.py --config config.yaml
-```
+The model was trained for **42 epochs** (early stopping from max 100) with stable convergence:
 
-### 3. Evaluate Model
+![Training History](outputs/models/training_curves.png)
 
-```bash
-python src/training/evaluator.py --checkpoint outputs/models/best_model.pt
-```
+**Key Observations:**
+- 📉 **Total loss** decreased from 619.87 → 598.96 (training) and 639.45 → 615.45 (validation)
+- 📈 **Accuracy** improved from 49.46% → 95.34% (training) with best validation at 93.44%
+- 🎯 **No overfitting**: Training and validation curves remain close throughout
+- ⏱️ **Training time**: ~45 minutes on NVIDIA GeForce MX450
 
-### 4. Run Inference
+### Confusion Matrix
 
-```bash
-python src/inference.py --audio path/to/audio.mp3 --checkpoint outputs/models/best_model.pt
-```
+![Confusion Matrix](outputs/models/confusion_matrix.png)
 
-### 5. Launch Demo Interface
+**Analysis:**
+- ✅ **30/30** real music samples correctly classified (100%)
+- ✅ **27/30** AI-generated samples correctly classified (90%)
+- ⚠️ **3 false positives**: High-quality AI music misclassified as real
+- ✅ **0 false negatives**: Perfect protection for authentic content
 
-**Gradio**:
-```bash
-python demo_gradio.py
-```
+### Model Statistics
 
-**Streamlit**:
-```bash
-streamlit run demo_streamlit.py
-```
+| Component | Parameters | Size |
+|-----------|-----------|------|
+| Encoder | 1,376,416 | 5.25 MB |
+| Decoder | 1,379,040 | 5.26 MB |
+| Transformer | 18,185,728 | 69.36 MB |
+| Classifier | 936,194 | 3.57 MB |
+| **Total** | **21,077,987** | **80.41 MB** |
 
 ---
 
@@ -237,147 +332,450 @@ streamlit run demo_streamlit.py
 
 ```
 AI-Music-DeepFake-Detector/
-├── notebooks/                      # Jupyter notebooks (step-by-step guide)
+│
+├── 📓 notebooks/                          # Jupyter notebooks for experimentation
 │   ├── 01_setup_and_data_exploration.ipynb
-│   ├── 02_audio_preprocessing.ipynb
-│   ├── 03_dataset_preparation.ipynb
-│   ├── 04_autoencoder_architecture.ipynb
-│   ├── 05_transformer_architecture.ipynb
-│   ├── 06_hybrid_model.ipynb
-│   ├── 07_model_training.ipynb
-│   ├── 08_model_evaluation.ipynb
-│   ├── 09_inference_visualization.ipynb
-│   └── 10_deployment.ipynb
+│   ├── 02_audio_preprocessing_features.ipynb
+│   └── 03_model_development.ipynb
 │
-├── src/                            # Source code
-│   ├── data/                       # Data processing modules
-│   │   ├── audio_loader.py
-│   │   ├── feature_extractor.py
-│   │   ├── augmentation.py
-│   │   └── dataset.py
-│   ├── models/                     # Model architectures
-│   │   ├── autoencoder.py
-│   │   ├── transformer.py
-│   │   ├── hybrid_model.py
-│   │   └── losses.py
-│   ├── training/                   # Training utilities
-│   │   ├── trainer.py
-│   │   ├── evaluator.py
-│   │   └── callbacks.py
-│   └── utils/                      # Helper functions
-│       ├── config.py
-│       ├── visualization.py
-│       └── metrics.py
+├── 📂 data/                               # Dataset directory
+│   ├── raw/
+│   │   ├── real/                          # GTZAN dataset (1000 tracks)
+│   │   └── synthetic/                     # Suno AI-generated (256 tracks)
+│   ├── processed/                         # Preprocessed mel-spectrograms
+│   │   ├── train_data.pkl                # 279 samples
+│   │   ├── val_data.pkl                  # 61 samples
+│   │   ├── test_data.pkl                 # 60 samples
+│   │   └── metadata.json
+│   └── splits/                            # Train/val/test split info
 │
-├── data/                           # Dataset directory
-│   ├── raw/                        # Raw audio files
-│   │   ├── real/
-│   │   └── synthetic/
-│   ├── processed/                  # Preprocessed features
-│   └── splits/                     # Train/val/test splits
+├── 🧠 src/                                # Source code modules
+│   ├── data/
+│   │   ├── dataset.py                    # PyTorch Dataset class
+│   │   └── preprocessing.py              # Audio processing utilities
+│   ├── models/
+│   │   ├── autoencoder.py                # Autoencoder architecture
+│   │   ├── transformer.py                # Transformer encoder
+│   │   └── hybrid_model.py               # Complete hybrid model
+│   ├── training/
+│   │   ├── trainer.py                    # Training loop
+│   │   └── evaluator.py                  # Evaluation metrics
+│   └── utils/
+│       ├── audio_processor.py            # Audio I/O and processing
+│       ├── visualizer.py                 # Plotting utilities
+│       └── config_loader.py              # Configuration management
 │
-├── outputs/                        # Training outputs
-│   ├── models/                     # Saved checkpoints
-│   ├── logs/                       # TensorBoard logs
-│   ├── visualizations/             # Plots and figures
-│   └── results/                    # Evaluation results
+├── 📊 outputs/                            # Training outputs
+│   ├── models/
+│   │   ├── best_model.pth                # Best checkpoint (epoch 27)
+│   │   ├── model_architecture.json       # Architecture specs
+│   │   ├── training_summary.json         # Complete metrics
+│   │   ├── training_curves.png           # Loss/accuracy plots
+│   │   └── confusion_matrix.png          # Test set confusion matrix
+│   ├── logs/                              # Training logs
+│   ├── results/                           # Evaluation results
+│   └── visualizations/                    # Additional plots
 │
-├── tests/                          # Unit tests
-│   ├── test_data_pipeline.py
+├── 📄 Report/                             # Technical report (LNCS format)
+│   ├── main.tex                          # LaTeX source
+│   ├── training_curves.png               # Figure 1
+│   ├── confusion_matrix.png              # Figure 2
+│   └── VERIFICATION_REPORT.md            # Value verification
+│
+├── 🧪 tests/                              # Unit tests
 │   ├── test_models.py
+│   ├── test_preprocessing.py
 │   └── test_training.py
 │
-├── config.yaml                     # Configuration file
-├── requirements.txt                # Python dependencies
-├── README.md                       # This file
-├── LICENSE                         # MIT License
-└── .gitignore                      # Git ignore rules
+├── ⚙️ config.yaml                         # Main configuration file
+├── 📋 requirements.txt                    # Python dependencies
+├── 📜 LICENSE                             # MIT License
+└── 📖 README.md                           # This file
 ```
 
 ---
 
-## 📈 Results
+## 📚 Datasets
 
-### Performance Metrics
+### Real Music: GTZAN Dataset
 
-| Metric      | Score    |
-|-------------|----------|
-| Accuracy    | 89.3%    |
-| Precision   | 87.5%    |
-| Recall      | 91.2%    |
-| F1-Score    | 89.3%    |
-| ROC-AUC     | 0.92     |
+- **Source**: [GTZAN Genre Collection](http://marsyas.info/downloads/datasets.html)
+- **Size**: 1,000 audio tracks (30 seconds each)
+- **Genres**: Blues, Classical, Country, Disco, Hip-Hop, Jazz, Metal, Pop, Reggae, Rock
+- **Format**: WAV files at 22,050 Hz
+- **Usage**: Randomly selected 200 tracks for balanced dataset
 
-### Comparison with Baselines
+### AI-Generated Music: Suno AI
 
-| Model                  | Accuracy | ROC-AUC |
-|------------------------|----------|---------|
-| **Hybrid (Ours)**      | **89.3%**| **0.92**|
-| Autoencoder Only       | 81.7%    | 0.85    |
-| Transformer Only       | 84.2%    | 0.88    |
-| CNN Baseline           | 78.5%    | 0.82    |
-| SVM + MFCC             | 72.3%    | 0.76    |
+- **Source**: [Suno AI Platform](https://www.suno.ai/)
+- **Size**: 256 AI-generated music tracks
+- **Styles**: Various genres matching GTZAN diversity
+- **Format**: MP3/WAV converted to 22,050 Hz
+- **Usage**: Randomly selected 200 tracks for balanced dataset
 
-### Training Curves
+### Balanced Dataset Split
 
-![Training Curves](outputs/visualizations/training_curves.png)
+| Split | Real | AI-Generated | Total | Percentage |
+|-------|------|--------------|-------|-----------|
+| **Train** | 140 | 139 | 279 | 70% |
+| **Validation** | 30 | 31 | 61 | 15% |
+| **Test** | 30 | 30 | 60 | 15% |
+| **Total** | 200 | 200 | 400 | 100% |
 
-### Confusion Matrix
+---
 
-![Confusion Matrix](outputs/visualizations/confusion_matrix.png)
+## 🎓 Training
+
+### Training Configuration
+
+```yaml
+# Training Hyperparameters
+epochs: 100                    # Maximum training epochs
+batch_size: 32                # Samples per batch
+learning_rate: 0.0001         # Initial learning rate (1e-4)
+weight_decay: 0.00001         # L2 regularization (1e-5)
+optimizer: adamw              # AdamW optimizer
+scheduler: cosine             # Cosine annealing LR schedule
+warmup_epochs: 5              # Learning rate warmup
+early_stopping_patience: 15   # Early stopping threshold
+
+# Loss Weights
+classification_weight: 0.7    # 70% classification loss
+reconstruction_weight: 0.3    # 30% reconstruction loss
+
+# Regularization
+dropout: 0.3                  # Dropout in classifier
+transformer_dropout: 0.1      # Dropout in transformer
+autoencoder_dropout: 0.2      # Dropout in autoencoder
+```
+
+### Training Process
+
+```python
+from src.training.trainer import Trainer
+
+# Initialize trainer
+trainer = Trainer(
+    model=model,
+    train_loader=train_loader,
+    val_loader=val_loader,
+    config=config,
+    device=device
+)
+
+# Train model
+history = trainer.train(
+    epochs=100,
+    early_stopping_patience=15,
+    save_best=True,
+    checkpoint_dir='outputs/models/'
+)
+
+# Training statistics
+print(f"Best epoch: {history['best_epoch']}")
+print(f"Best validation accuracy: {history['best_val_acc']:.2f}%")
+print(f"Total training time: {history['total_time']:.2f} minutes")
+```
+
+### Training Tips
+
+1. **GPU Memory**: Model requires ~2GB GPU memory (fits on MX450)
+2. **Data Loading**: Set `num_workers=0` on Windows for compatibility
+3. **Mixed Precision**: Enable `amp=True` for faster training (if supported)
+4. **Checkpoint**: Model auto-saves best validation accuracy checkpoint
+5. **Monitoring**: Use TensorBoard for real-time training visualization
+
+---
+
+## 🔬 Evaluation
+
+### Evaluate Trained Model
+
+```python
+from src.training.evaluator import Evaluator
+
+# Load best model
+model.load_state_dict(torch.load('outputs/models/best_model.pth')['model_state_dict'])
+model.eval()
+
+# Initialize evaluator
+evaluator = Evaluator(model, test_loader, device)
+
+# Comprehensive evaluation
+results = evaluator.evaluate(
+    save_confusion_matrix=True,
+    save_classification_report=True,
+    output_dir='outputs/results/'
+)
+
+# Display metrics
+print(f"Test Accuracy: {results['accuracy']:.2f}%")
+print(f"Precision: {results['precision']:.4f}")
+print(f"Recall: {results['recall']:.4f}")
+print(f"F1-Score: {results['f1_score']:.4f}")
+```
+
+### Evaluation Metrics
+
+The system computes comprehensive metrics:
+
+- **Accuracy**: Overall classification correctness
+- **Precision**: True positives / (True positives + False positives)
+- **Recall**: True positives / (True positives + False negatives)
+- **F1-Score**: Harmonic mean of precision and recall
+- **Confusion Matrix**: Detailed prediction breakdown
+- **ROC Curve**: Receiver operating characteristic (optional)
+- **Per-Class Metrics**: Individual performance for real/AI classes
+
+---
+
+## 📄 Technical Report
+
+A comprehensive technical report is available in LNCS (Lecture Notes in Computer Science) format:
+
+- **Location**: [`Report/main.tex`](Report/main.tex)
+- **Format**: LaTeX (LNCS template)
+- **Pages**: 20+ pages with full methodology
+- **Sections**:
+  - Abstract and Introduction
+  - Related Work
+  - Methodology (with mathematical formulations)
+  - Experimental Setup
+  - Results and Analysis
+  - Discussion and Future Work
+  - Complete Bibliography
+
+**Compile PDF:**
+```bash
+cd Report
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
+```
+
+---
+
+## 🛠️ Requirements
+
+### Core Dependencies
+
+```
+# Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Audio Processing
+librosa>=0.10.0
+soundfile>=0.12.0
+
+# Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Data Manipulation
+pandas>=2.0.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+
+# Configuration
+pyyaml>=6.0
+
+# Progress Bars
+tqdm>=4.65.0
+
+# Jupyter
+jupyter>=1.0.0
+notebook>=6.5.0
+```
+
+See [`requirements.txt`](requirements.txt) for complete list with exact versions.
+
+### System Requirements
+
+**Minimum:**
+- CPU: Intel i5 or equivalent
+- RAM: 8GB
+- Storage: 5GB free space
+- OS: Windows 10, Ubuntu 18.04+, macOS 10.14+
+
+**Recommended:**
+- CPU: Intel i7 or AMD Ryzen 7
+- RAM: 16GB
+- GPU: NVIDIA GPU with 4GB+ VRAM (CUDA 11.8+)
+- Storage: 10GB free space (SSD preferred)
+- OS: Ubuntu 20.04+ with CUDA toolkit
+
+---
+
+## 📖 Citation
+
+If you use this code or methodology in your research, please cite:
+
+```bibtex
+@article{nasir2026aimusic,
+  title={AI-Generated Music Detection Using Hybrid Autoencoder-Transformer Architecture},
+  author={Nasir, Huzaifa},
+  journal={National University of Computer and Emerging Sciences},
+  year={2026},
+  institution={FAST-NUCES Islamabad},
+  url={https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector}
+}
+```
+
+**APA Format:**
+```
+Nasir, H. (2026). AI-Generated Music Detection Using Hybrid Autoencoder-Transformer 
+Architecture. National University of Computer and Emerging Sciences, Islamabad, Pakistan.
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+We welcome contributions from the community! Here's how you can help:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Ways to Contribute
+
+1. **Bug Reports**: Open an issue with detailed reproduction steps
+2. **Feature Requests**: Suggest new features or improvements
+3. **Code Contributions**: Submit pull requests with enhancements
+4. **Documentation**: Improve README, comments, or technical docs
+5. **Datasets**: Share new datasets or preprocessing scripts
+
+### Contribution Guidelines
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Setup
+
+```bash
+# Clone your fork
+git clone https://github.com/YOUR_USERNAME/AI-Music-DeepFake-Detector.git
+cd AI-Music-DeepFake-Detector
+
+# Add upstream remote
+git remote add upstream https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector.git
+
+# Create development branch
+git checkout -b dev
+
+# Install development dependencies
+pip install -r requirements.txt
+pip install pytest black flake8 mypy
+
+# Run tests
+pytest tests/
+
+# Format code
+black src/ tests/
+flake8 src/ tests/
+```
 
 ---
 
-## 📄 License
+## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+### MIT License Summary
+
+✅ **Permissions:**
+- ✓ Commercial use
+- ✓ Modification
+- ✓ Distribution
+- ✓ Private use
+
+⚠️ **Conditions:**
+- License and copyright notice must be included
+
+❌ **Limitations:**
+- No warranty
+- No liability
+
+---
+
+## 👤 Contact
+
+**Huzaifa Nasir**
+
+- 📧 Email: [nasirhuzaifa95@gmail.com](mailto:nasirhuzaifa95@gmail.com)
+- 🎓 Institution: National University of Computer and Emerging Sciences (FAST-NUCES), Islamabad
+- 💼 GitHub: [@Huzaifanasir95](https://github.com/Huzaifanasir95)
+- 🔗 Project Repository: [AI-Music-DeepFake-Detector](https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector)
+
+### Support
+
+For questions, issues, or collaborations:
+
+1. **GitHub Issues**: [Open an issue](https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector/issues)
+2. **Email**: Direct technical questions to nasirhuzaifa95@gmail.com
+3. **Discussions**: Use GitHub Discussions for general questions
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **Datasets**: FMA, GTZAN, MusicNet
-- **Frameworks**: PyTorch, Librosa, Hugging Face
-- **Inspiration**: Recent advances in audio deepfake detection
+This project was made possible thanks to:
+
+- **GTZAN Dataset**: George Tzanetakis and Perry Cook for the music genre dataset
+- **PyTorch Team**: For the excellent deep learning framework
+- **Librosa Developers**: For comprehensive audio processing tools
+- **Suno AI**: For providing access to AI-generated music samples
+- **FAST-NUCES**: For institutional support and resources
+- **Open Source Community**: For various tools and libraries used
+
+### Research Inspiration
+
+This work builds upon research in:
+- Audio deepfake detection (Frank et al., 2021)
+- Transformer architectures (Vaswani et al., 2017)
+- Audio spectrogram transformers (Gong et al., 2021)
+- Hybrid CNN-Transformer models (Dosovitskiy et al., 2020)
 
 ---
 
-## 📧 Contact
+## 📊 Project Status
 
-For questions or collaborations:
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **LinkedIn**: [Your Name](https://linkedin.com/in/yourprofile)
+### Current Version: 1.0.0
 
----
+- ✅ **Stable**: Core detection system fully functional
+- ✅ **Documented**: Comprehensive README and technical report
+- ✅ **Tested**: Validated on GTZAN and Suno AI datasets
+- 🚧 **Active Development**: Ongoing improvements and features
 
-## 🔗 Citation
+### Roadmap
 
-If you use this project in your research, please cite:
+**Version 1.1** (Q2 2026)
+- [ ] Multi-generator support (AIVA, Jukebox, MusicLM)
+- [ ] Real-time inference API
+- [ ] Model quantization for mobile deployment
+- [ ] Web demo interface
 
-```bibtex
-@software{ai_music_deepfake_detector,
-  author = {Your Name},
-  title = {AI Music DeepFake Detector: A Hybrid Transformer-Autoencoder Framework},
-  year = {2026},
-  url = {https://github.com/yourusername/AI-Music-DeepFake-Detector}
-}
-```
+**Version 2.0** (Q3 2026)
+- [ ] Attention visualization
+- [ ] Generator attribution (identify which AI created the music)
+- [ ] Partial detection for hybrid human-AI compositions
+- [ ] Cross-domain extension (speech, sound effects)
 
 ---
 
 <div align="center">
-  <strong>⭐ Star this repository if you find it helpful! ⭐</strong>
+
+### ⭐ Star this repository if you find it useful!
+
+**Made with ❤️ by Huzaifa Nasir**
+
+[🔝 Back to Top](#-ai-music-deepfake-detector)
+
 </div>
