@@ -1,0 +1,18 @@
+{
+  "total_samples": 1255,
+  "train_samples": 279,
+  "val_samples": 61,
+  "test_samples": 60,
+  "real_samples": 999,
+  "synthetic_samples": 256,
+  "mel_spec_shape": [
+    128,
+    431
+  ],
+  "sample_rate": 22050,
+  "duration": 10,
+  "n_mels": 128,
+  "failed_files": [
+    "d:\\Projects\\AI-Music-DeepFake-Detector\\data\\raw\\real\\jazz.00054.wav"
+  ]
+}
