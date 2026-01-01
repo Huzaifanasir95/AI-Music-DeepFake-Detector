@@ -1,0 +1,92 @@
+# Data Configuration
+data:
+  raw_path: "data/raw"
+  processed_path: "data/processed"
+  sample_rate: 22050
+  duration: 5  # seconds
+  hop_length: 512
+  n_fft: 2048
+  n_mels: 128
+  n_mfcc: 13
+
+# Data Augmentation
+augmentation:
+  enabled: true
+  pitch_shift_steps: [-2, -1, 0, 1, 2]
+  time_stretch_rates: [0.9, 1.0, 1.1]
+  noise_factor: 0.005
+  probability: 0.3
+
+# Model Configuration
+model:
+  # Transformer settings
+  transformer:
+    d_model: 256
+    nhead: 8
+    num_layers: 6
+    dim_feedforward: 1024
+    dropout: 0.1
+    activation: "relu"
+  
+  # Autoencoder settings
+  autoencoder:
+    encoder_dims: [512, 256, 128]
+    latent_dim: 64
+    decoder_dims: [128, 256, 512]
+    dropout: 0.2
+  
+  # Classifier settings
+  classifier:
+    hidden_dims: [128, 64]
+    dropout: 0.3
+    activation: "relu"
+
+# Training Configuration
+training:
+  batch_size: 32
+  num_epochs: 100
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  optimizer: "adamw"
+  scheduler: "cosine"
+  warmup_epochs: 5
+  
+  # Loss weights
+  classification_weight: 1.0
+  reconstruction_weight: 0.5
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    min_delta: 0.001
+  
+  # Gradient clipping
+  gradient_clip: 1.0
+  
+  # Mixed precision training
+  mixed_precision: true
+
+# Data Split
+split:
+  train: 0.7
+  validation: 0.15
+  test: 0.15
+  random_seed: 42
+
+# Device Configuration
+device: "cuda"  # cuda, cpu, or mps (for Apple Silicon)
+
+# Logging
+logging:
+  log_interval: 10  # batches
+  checkpoint_dir: "checkpoints"
+  results_dir: "results"
+  use_tensorboard: true
+  use_wandb: false
+  project_name: "music-deepfake-detector"
+
+# Evaluation
+evaluation:
+  threshold: 0.5
+  metrics: ["accuracy", "precision", "recall", "f1", "roc_auc"]
