@@ -529,32 +529,6 @@ The system computes comprehensive metrics:
 
 ---
 
-## 📄 Technical Report
-
-A comprehensive technical report is available in LNCS (Lecture Notes in Computer Science) format:
-
-- **Location**: [`Report/main.tex`](Report/main.tex)
-- **Format**: LaTeX (LNCS template)
-- **Pages**: 20+ pages with full methodology
-- **Sections**:
-  - Abstract and Introduction
-  - Related Work
-  - Methodology (with mathematical formulations)
-  - Experimental Setup
-  - Results and Analysis
-  - Discussion and Future Work
-  - Complete Bibliography
-
-**Compile PDF:**
-```bash
-cd Report
-pdflatex main.tex
-bibtex main
-pdflatex main.tex
-pdflatex main.tex
-```
-
----
 
 ## 🛠️ Requirements
 
@@ -657,31 +631,6 @@ We welcome contributions from the community! Here's how you can help:
 4. **Push** to the branch (`git push origin feature/amazing-feature`)
 5. **Open** a Pull Request
 
-### Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/AI-Music-DeepFake-Detector.git
-cd AI-Music-DeepFake-Detector
-
-# Add upstream remote
-git remote add upstream https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector.git
-
-# Create development branch
-git checkout -b dev
-
-# Install development dependencies
-pip install -r requirements.txt
-pip install pytest black flake8 mypy
-
-# Run tests
-pytest tests/
-
-# Format code
-black src/ tests/
-flake8 src/ tests/
-```
-
 ---
 
 ## 📜 License
@@ -773,8 +722,6 @@ This work builds upon research in:
 <div align="center">
 
 ### ⭐ Star this repository if you find it useful!
-
-**Made with ❤️ by Huzaifa Nasir**
 
 [🔝 Back to Top](#-ai-music-deepfake-detector)
 
