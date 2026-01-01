@@ -9,8 +9,6 @@
 
 **A Hybrid Deep Learning System for Detecting AI-Generated Music**
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Results](#-results) • [Architecture](#-architecture) • [Citation](#-citation)
-
 </div>
 
 ---
