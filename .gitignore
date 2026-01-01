@@ -181,3 +181,4 @@ cython_debug/
 .cursorindexingignore
 data/raw/real/blues.00001.wav
 /data/raw
+outputs/models/best_model.pth
