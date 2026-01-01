@@ -11,8 +11,7 @@
 
 **A Hybrid Deep Learning System for Detecting AI-Generated Music**
 
-[📄 Paper (Zenodo)](https://doi.org/10.5281/zenodo.18114511) | [🤗 Model (Hugging Face)](https://huggingface.co/huzaifanasirrr/ai-music-deepfake-detector) | [💻 GitHub](https://github.com/Huzaifanasir95/AI-Music-DeepFake-Detector)
-
+[📄 Paper (Zenodo)](https://doi.org/10.5281/zenodo.18114511) | [🤗 Model (Hugging Face)](https://huggingface.co/huzaifanasirrr/ai-music-deepfake-detector)
 </div>
 
 ---
